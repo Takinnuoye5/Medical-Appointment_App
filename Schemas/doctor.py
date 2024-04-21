@@ -10,13 +10,15 @@ class DoctorBase(BaseModel):
 
 class DoctorCreate(DoctorBase):
     is_available: bool = True
-    is_booked: bool = False  
+    is_booked: bool = False
+    
 
 class Doctor(DoctorBase):
     id: int
     is_available: bool
     is_booked: bool
-    message: Optional[str]  # Optional message field
+    message: Optional[str]  
+
 
 doctor_data = [
     Doctor(id=1, name="Dr Femi", specialization="Cardiology", phone="09070754352", is_available=True, is_booked=False, message=None),
