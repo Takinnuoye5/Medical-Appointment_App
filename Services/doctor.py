@@ -1,39 +1,48 @@
-from typing import List, Optional
-from Schemas.doctor import Doctor, DoctorCreate
+
+from typing import List
+from Schemas.doctor import DoctorCreate, Doctor, doctor_data
 
 
 class DoctorService:
     def __init__(self):
-        self.doctors = []
-        self.last_id = 0
+        self.doctors_db = doctor_data
 
-    def create_doctor(self, doctor_in: DoctorCreate) -> Doctor:
-        self.last_id += 1
-        doctor = Doctor(id=self.last_id, **doctor_in.dict())
-        self.doctors.append(doctor)
-        return doctor
-
-    def get_doctor(self, doctor_id: int) -> Optional[Doctor]:
-        for doctor in self.doctors:
-            if doctor.id == doctor_id:
-                return doctor
-        return None
+    def get_available_doctors(self) -> List[Doctor]:
+        return [doctor for doctor in self.doctors_db if doctor.is_available]
 
     def get_doctors(self) -> List[Doctor]:
-        return self.doctors
+        return self.doctors_db
 
-    def update_doctor(self, doctor_id: int, doctor_in: DoctorCreate) -> Optional[Doctor]:
-        for doctor in self.doctors:
+    def get_doctor_by_id(self, doctor_id: int) -> Doctor:
+        for doctor in self.doctors_db:
             if doctor.id == doctor_id:
-                doctor.name = doctor_in.name
-                doctor.specialization = doctor_in.specialization
-                doctor.phone = doctor_in.phone
                 return doctor
-        return None
+        raise ValueError("Doctor not found")
 
-    def delete_doctor(self, doctor_id: int) -> bool:
-        for i, doctor in enumerate(self.doctors):
+    def create_doctor(self, doctor_data: DoctorCreate) -> Doctor:
+        doctor_id = len(self.doctors_db) + 1
+        doctor = Doctor(id=doctor_id, **doctor_data.dict())
+        self.doctors_db.append(doctor)
+        return doctor
+
+    def update_doctor(self, doctor_id: int, doctor_data: DoctorCreate) -> Doctor:
+        doctor = self.get_doctor_by_id(doctor_id)
+        doctor.name = doctor_data.name
+        doctor.specialization = doctor_data.specialization
+        doctor.phone = doctor_data.phone
+        return doctor
+
+    def set_doctor_availability(self, doctor_id: int, is_available: bool) -> Doctor:
+        for doctor in self.doctors_db:
             if doctor.id == doctor_id:
-                del self.doctors[i]
-                return True
-        return False
+                doctor.is_available = is_available
+                return doctor  # Return the updated Doctor object
+        raise ValueError("Doctor not found")
+
+    def delete_doctor(self, doctor_id: int):
+        doctor = self.get_doctor_by_id(doctor_id)
+        self.doctors_db.remove(doctor)
+
+    
+
+
