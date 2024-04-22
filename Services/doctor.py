@@ -19,12 +19,13 @@ class DoctorService:
                 return doctor
         raise ValueError("Doctor not found")
 
-    def create_doctor(self, doctor_data: DoctorCreate) -> Doctor:
+    def create_doctor(self, doctor_data: DoctorCreate) -> tuple[Doctor, str]:
         doctor_id = len(self.doctors_db) + 1
-        doctor = Doctor(id=doctor_id, **doctor_data.dict())
+        doctor = Doctor(id=doctor_id, message="Doctor created successfully", **doctor_data.dict())
         self.doctors_db.append(doctor)
-        return doctor
-
+        message = "Doctor created successfully"
+        return doctor, message
+        
     def update_doctor(self, doctor_id: int, doctor_data: DoctorCreate) -> Doctor:
         doctor = self.get_doctor_by_id(doctor_id)
         doctor.name = doctor_data.name
@@ -36,12 +37,17 @@ class DoctorService:
         for doctor in self.doctors_db:
             if doctor.id == doctor_id:
                 doctor.is_available = is_available
-                return doctor  # Return the updated Doctor object
+                return doctor  
         raise ValueError("Doctor not found")
 
-    def delete_doctor(self, doctor_id: int):
-        doctor = self.get_doctor_by_id(doctor_id)
-        self.doctors_db.remove(doctor)
+    def delete_doctor(self, doctor_id: int) -> bool:
+        for doctor in self.doctors_db:
+            if doctor.id == doctor_id:
+                self.doctors_db.remove(doctor)
+                return True
+        return False
+
+
 
     
 

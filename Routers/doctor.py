@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, HTTPException
 from typing import List
-from Schemas.doctor import Doctor, DoctorCreate
+from Schemas.doctor import Doctor, DoctorCreate, DoctorResponse
 from Services.doctor import DoctorService
 
 router = APIRouter()
@@ -16,24 +16,24 @@ def get_doctors():
     return doctors
 
 @router.get("/{doctor_id}", response_model=Doctor)
-def read_doctor(doctor_id: int):
+def get_doctor(doctor_id: int):
     doctor = doctor_service.get_doctor_by_id(doctor_id)
     if doctor is None:
         raise HTTPException(status_code=404, detail="Doctor not found")
     doctor.message = "Doctor found."
     return doctor
 
-@router.post("/", response_model=Doctor, status_code=201)
+@router.post("/", response_model=DoctorResponse, status_code=201)
 def create_doctor(doctor_create: DoctorCreate):
-    doctor = doctor_service.create_doctor(doctor_create)
-    doctor.message = "Doctor created successfully."  # Set message to None initially
+    doctor, message = doctor_service.create_doctor(doctor_create)
+    doctor.message = message 
     return doctor
 
 
 @router.put("/{doctor_id}", response_model=Doctor)
 def update_doctor(doctor_id: int, doctor_create: DoctorCreate):
     doctor = doctor_service.update_doctor(doctor_id, doctor_create)
-    doctor.message = None  # Set message to None initially
+    doctor.message = "Doctor updated successfully"
     return doctor
 
 @router.put("/{doctor_id}/availability", response_model=Doctor)
