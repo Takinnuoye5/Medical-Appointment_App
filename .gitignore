@@ -1,5 +1,5 @@
 venv/
-__pyche__/
+__pycache__/
 logs/
 *.pyc
 node_modules/
