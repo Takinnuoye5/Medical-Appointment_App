@@ -1,9 +1,8 @@
-venv/
+medicalenv/
 __pycache__/
 logs/
 *.pyc
 node_modules/
-.venv/
 poetry.lock
 pyproject.toml
 
